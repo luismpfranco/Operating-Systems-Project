@@ -1,0 +1,9 @@
+numMaxUtilizadores : 40
+probDesistir : 15
+tmpMedioChegadaUtilizadores : 4
+numRecursos: 3
+maxFila : 20
+inicioSimulacao : 1
+tempoSimulacao : 60
+
+acrescentar numUsers cada rec, cada fila do rec (já ta no maxFila), fila do aquaparque

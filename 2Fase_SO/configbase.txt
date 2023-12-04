@@ -1,0 +1,8 @@
+numMaxUtilizadores : 20
+probDesistir : 15
+tmpMedioChegadaUtilizadores : 4
+tmpDemoraRecurso : 5
+numRecursos: 3
+maxFila : 10
+inicioSimulacao : 1
+tempoSimulacao : 60
