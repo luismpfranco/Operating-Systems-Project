@@ -1,9 +1,11 @@
 #include "util.h"
 
-bool simEnd = false;
+// Variável
+bool fimSimulacao = false;
+bool monitorAtivo = false;
 
-//Recebe mensagens do cliente através do socket, decodifica e escreve informações formatadas no ficheiro de output e na consola
-void decodMessage (int newsocketfd)
+// Recebe mensagens do cliente através do socket, decodifica e escreve informações formatadas no ficheiro de output e na consola
+void decodMessage (int newsocket)
 {
 	int messageArrived = 0;
 	int state = 0;
@@ -12,6 +14,7 @@ void decodMessage (int newsocketfd)
 	int qtdUtilizadores1 = 0;
 	int qtdUtilizadores2 = 0;
 	int qtdUtilizadores3 = 0;
+	int qtdUtilizadores4 = 0;
 	
 	FILE* ficheiroSaida = fopen("saida.txt", "a");
 	
@@ -24,9 +27,9 @@ void decodMessage (int newsocketfd)
 		while(state != 20)
 		{
 			char lineReceive[LINHAMAX + 1];
-			messageArrived = recv(newsocketfd, lineReceive, LINHAMAX, 0);
+			messageArrived = recv(newsocket, lineReceive, LINHAMAX, 0);
 			
-			sscanf(lineReceive, "%d %d %d %d %d", &state, &numUtilizadores, &qtdUtilizadores1, &qtdUtilizadores2, &qtdUtilizadores3);
+			sscanf(lineReceive, "%d %d %d %d %d %d", &state, &numUtilizadores, &qtdUtilizadores1, &qtdUtilizadores2, &qtdUtilizadores3, &qtdUtilizadores4);
 			
 			switch(state)
 			{
@@ -60,14 +63,20 @@ void decodMessage (int newsocketfd)
 					printf("Recurso 3: %d utilizador(es)\n", qtdUtilizadores3);
 					break;
 				}
+				case 6:
+				{
+					fprintf(ficheiroSaida, "Recurso 4: %d utilizador(es)\n", qtdUtilizadores4);
+					printf("Recurso 4: %d utilizador(es)\n", qtdUtilizadores4);
+					break;
+				}
 			}
 		}
-		if(state == 20)
-		{
-			fprintf(ficheiroSaida, "Término da simulação.\n");
-			printf("Término da simulação.\n");
-			fclose(ficheiroSaida);
-		}
+	}
+	if(state == 20)
+	{
+		fprintf(ficheiroSaida, "Término da simulação.\n");
+		printf("Término da simulação.\n");
+		fclose(ficheiroSaida);
 	}
 }
 
@@ -75,7 +84,7 @@ void decodMessage (int newsocketfd)
 void simInit()
 {
 
-	int socketfd, newsocketfd, lenClient, childpid, lenServer;
+	int socketfd, newsocket, lenClient, childpid, lenServer;
 	struct sockaddr_un addrClient, addrServer;
 
 	if ((socketfd = socket(AF_UNIX,SOCK_STREAM, 0)) < 0)
@@ -94,12 +103,18 @@ void simInit()
 		perror("Não é possível a conexão do socket ao endereço específico.");
 	}
 
+	if(monitorAtivo == false)
+	{
+			printf(WHT "Esperando pelo monitor\n" RESET);
+			monitorAtivo = true;
+	}
+
 	printf("Esperando pelo simulador\n");
 	listen (socketfd, 1);
 
 	lenClient = sizeof(addrClient);
-	newsocketfd = accept (socketfd, (struct sockaddr *) &addrClient, &lenClient);
-	if(newsocketfd < 0)
+	newsocket = accept (socketfd, (struct sockaddr *) &addrClient, &lenClient);
+	if(newsocket < 0)
 	{
 		perror ("Erro ao criar o socket.");
 	}
@@ -111,10 +126,10 @@ void simInit()
 	else if(childpid == 0)
 	{
 		close(socketfd);
-		decodMessage(newsocketfd);
+		decodMessage(newsocket);
 		exit(0);
 	}
-	close(newsocketfd);
+	close(newsocket);
 }
 
 //Apresenta um menu para iniciar a simulação e chama simInit para iniciar o servidor
@@ -124,7 +139,7 @@ int main(int argc, char const * argv[])
 	printf ("1. Começar a simulação.\n");
 
 	int opt = 0;
-	while(!simEnd)
+	while(!fimSimulacao)
 	{
 		if(opt == 1)
 		{

@@ -6,6 +6,6 @@ monitor: monitor.o
 simulador: simulador.o
 	gcc simulador.c -lpthread -o simulador
 
-clean: 
-	rm *.o monitor
-	rm *.o simulador
+clean:
+	rm -f *.o *~ monitor simulador
+	rm saida.txt

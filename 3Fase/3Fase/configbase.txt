@@ -1,0 +1,12 @@
+numMaxUtilizadores : 20
+numMaxUtilizadoresCriar : 50
+numMaxUsersRec1 : 10
+numMaxFilaRec1 : 10
+numMaxUsersRec2 : 5
+numMaxFilaRec2 : 10
+numMaxUsersRec3 : 3
+numMaxFilaRec3 : 10
+numMaxUsersRec4 : 8
+numMaxFilaRec4 : 10
+numRecursos : 4
+maxFilaAquaparque : 10
